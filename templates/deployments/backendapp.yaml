@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "backendapp.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "backendapp.name" . }}
+    chart: {{ template "backendapp.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: {{ .Values.apps.backendapp.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "backendapp.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "backendapp.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount }}
+      initContainers:
+        - name: pod-dependency
+          image: ylonkar/pod-dependency-init-container:1.0
+          env:
+          - name: POD_LABELS
+            value: role=mongo
+          - name: MAX_RETRY
+            value: "10"
+          - name: RETRY_TIME_OUT
+            value: "5000"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.apps.backendapp.repository }}:{{ .Values.apps.backendapp.tag }}
+          env:
+          - name: DB_URL
+            value: {{ template "monogo.dburl" . }}
+          - name: DB_PORT
+            value: !!str {{ .Values.database.mongo.port }}
+          - name: DB_NAME
+            value: backendapp
+          - name: DB_REPLSET
+            value: {{ .Values.database.mongo.replicaSet }}
+          imagePullPolicy: {{ .Values.apps.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.backendapp.internalPort }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.backendapp.internalPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20  
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}

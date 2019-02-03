@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "frontendapp.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "frontendapp.name" . }}
+    chart: {{ template "backendapp.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: {{ .Values.apps.frontendapp.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "frontendapp.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "frontendapp.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount }}
+      initContainers:
+        - name: pod-dependency
+          image: ylonkar/pod-dependency-init-container:1.0
+          env:
+          - name: POD_LABELS
+            value: "app={{ template "backendapp.name" . }}"
+          - name: MAX_RETRY
+            value: "12"
+          - name: RETRY_TIME_OUT
+            value: "10000"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.apps.frontendapp.repository }}:{{ .Values.apps.frontendapp.tag }}
+          env:
+          - name: NODE_APP_URL
+            value: {{ printf "http://%s" .Values.service.backendapp.name }}
+          imagePullPolicy: {{ .Values.apps.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.frontendapp.internalPort }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.frontendapp.internalPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20  
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}

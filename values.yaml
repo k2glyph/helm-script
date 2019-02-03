@@ -1,0 +1,49 @@
+# for discovering services and pods
+serviceAccount: discovery-sa
+namespace: customer-1
+
+apps:
+  backendapp:
+    repository: ylonkar/nodeapp
+    tag: "2.0.0"
+    replicaCount: 1
+  frontendapp:
+    repository: ylonkar/reactapp
+    tag: "2.0.0"
+    replicaCount: 1
+  pullPolicy: Always
+
+database:
+  mongo:
+    storageClassName: standard-1
+    storageName: mongo-persistent-storage
+    serviceName: mongo
+    replicaSet: rs0
+    replicas: 2
+    port: 27017
+
+service:
+  frontendapp:
+    name: frontendapp-service
+    type: NodePort
+    protocol: TCP
+    externalPort: 80
+    internalPort: 80
+
+  backendapp:
+    name: backendapp-service
+    type: NodePort
+    protocol: TCP
+    externalPort: 80
+    internalPort: 80
+
+ingress:
+  frontendapp:
+    name: frontend-ingress
+    tls: true
+    host: customer1.192.168.99.100.xip.io
+  nifi:
+    name: nifi-ingress
+    tls: true
+    host: nifi.192.168.99.100.xip.io
+tolerations: []

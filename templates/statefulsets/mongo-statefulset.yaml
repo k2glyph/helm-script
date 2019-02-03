@@ -1,0 +1,48 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: {{ .Values.database.mongo.serviceName }}
+  replicas: {{ .Values.database.mongo.replicas }}
+  template:
+    metadata:
+      labels:
+        role: mongo
+        environment: prod
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount }}
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo
+          command:
+            - mongod
+            - "--bind_ip"
+            - 0.0.0.0
+            - "--replSet"
+            - {{ .Values.database.mongo.replicaSet }}
+            - "--smallfiles"
+            - "--noprealloc"
+          ports:
+            - containerPort: {{ .Values.database.mongo.port }}
+          volumeMounts:
+            - name: {{ .Values.database.mongo.storageName }}
+              mountPath: /data/db
+        - name: mongo-sidecar
+          image: cvallance/mongo-k8s-sidecar
+          env:
+            - name: MONGO_SIDECAR_POD_LABELS
+              value: "role=mongo,environment=prod"
+            - name: KUBERNETES_MONGO_SERVICE_NAME
+              value: {{ .Values.database.mongo.serviceName }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.database.mongo.storageName }}
+    spec:
+      storageClassName: {{ .Values.database.mongo.storageClassName }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

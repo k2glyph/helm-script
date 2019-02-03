@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.backendapp.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "backendapp.name" . }}
+    chart: {{ template "backendapp.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.backendapp.type }}
+  ports:
+    - port: {{ .Values.service.backendapp.externalPort }}
+      targetPort: {{ .Values.service.backendapp.internalPort }}
+      protocol: {{ .Values.service.backendapp.protocol }}
+      name: {{ .Values.service.backendapp.name }}
+  selector:
+    app: {{ template "backendapp.name" . }}
+    release: {{ .Release.Name }}
