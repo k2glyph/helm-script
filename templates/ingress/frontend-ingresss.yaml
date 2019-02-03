@@ -11,12 +11,12 @@ metadata:
     {{- end }}
 spec:
   rules:
-  - http:
-      paths:
-      - backend:
-          serviceName: {{ .Values.service.frontendapp.name }}
-          servicePort: {{ .Values.service.frontendapp.externalPort }}
-  host: {{ .Values.ingress.frontendapp.host | quote }}
+    - host: {{ .Values.ingress.frontendapp.host | quote }}
+      http:
+        paths:
+        - backend:
+            serviceName: {{ .Values.service.frontendapp.name }}
+            servicePort: {{ .Values.service.frontendapp.externalPort }}
 {{- if .Values.ingress.frontendapp.tls }}
   tls:
   - secretName: {{ .Values.ingress.frontendapp.host }}-tls
