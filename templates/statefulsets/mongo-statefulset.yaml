@@ -42,7 +42,7 @@ spec:
       name: {{ .Values.database.mongo.storageName }}
     spec:
       storageClassName: {{ .Values.database.mongo.storageClassName }}
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: [ {{ .Values.database.mongo.accessMode }} ]
       resources:
         requests:
-          storage: 10Gi
+          storage: {{ .Values.database.mongo.storageSize }}
