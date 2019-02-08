@@ -29,21 +29,26 @@ service:
     protocol: TCP
     externalPort: 80
     internalPort: 80
-
   backendapp:
     name: backendapp-service
     type: NodePort
     protocol: TCP
     externalPort: 80
     internalPort: 80
+  nifi:
+    name: nifi-service
+    type: NodePort
+    protocol: TCP
+    externalPort: 8080
+    internalPort: 8080
 
 ingress:
   frontendapp:
     name: frontend-ingress
-    tls: true
-    host: customer1.192.168.99.100.xip.io
+    tls: false
+    host: customer1.ipradr.com
   nifi:
     name: nifi-ingress
-    tls: true
-    host: nifi.192.168.99.100.xip.io
+    tls: false
+    host: nifi.ipradr.com
 tolerations: []

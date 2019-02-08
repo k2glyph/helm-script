@@ -2,22 +2,24 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-    namespace: {{ .Values.namespace }}
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      kubernetes.io/tls-acme: "true"
-      ingress.kubernetes.io/proxy-body-size: 0m
-    name: ingress
+  name: {{ .Values.ingress.nifi.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    {{- if .Values.ingress.nifi.tls }}
+    kubernetes.io/tls-acme: 'true'
+    {{- end }}
 spec:
-    rules:
-      - host: nifi.192.168.99.100.xip.io
-        http:
-          paths:
-            - backend:
-                serviceName: nifi
-                servicePort: 80
-              path: /
-    tls:
-        - hosts:
-            - nifi.192.168.99.100.xip.io
-          secretName: tls-nifi
+  rules:
+    - host: {{ .Values.ingress.nifi.host | quote }}
+      http:
+        paths:
+        - backend:
+            serviceName: {{ .Values.service.nifi.name }}
+            servicePort: {{ .Values.service.nifi.externalPort }}
+{{- if .Values.ingress.nifi.tls }}
+  tls:
+  - secretName: {{ .Values.ingress.nifi.host }}-tls
+    hosts:
+    - {{ .Values.ingress.nifi.host | quote }}
+{{- end -}}

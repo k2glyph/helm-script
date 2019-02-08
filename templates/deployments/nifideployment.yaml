@@ -2,17 +2,23 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: nifi
+  name: {{ template "nifi.name" . }}
   namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "nifi.name" . }}
+    chart: {{ template "backendapp.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: nifi
+        app: {{ template "nifi.name" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
       - name: nifi
         image: apache/nifi:1.4.0
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.service.nifi.internalPort }}
