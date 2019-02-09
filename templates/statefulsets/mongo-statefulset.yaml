@@ -2,7 +2,7 @@ apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: mongo
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   serviceName: {{ .Values.database.mongo.serviceName }}
   replicas: {{ .Values.database.mongo.replicas }}

@@ -1,6 +1,5 @@
 # for discovering services and pods
 serviceAccount: discovery-sa
-namespace: customer-1
 
 apps:
   backendapp:
