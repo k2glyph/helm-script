@@ -22,7 +22,7 @@ database:
     replicas: 1
     port: 27017
     storageSize: 10Gi
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
 
 service:
   frontendapp:
