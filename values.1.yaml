@@ -1,6 +1,6 @@
 # for discovering services and pods
 serviceAccount: discovery-sa
-namespace: customer-1
+namespace: customer-2
 
 apps:
   backendapp:
@@ -48,9 +48,9 @@ ingress:
   frontendapp:
     name: frontend-ingress
     tls: false
-    host: customer1.ipradr.com
+    host: customer2.ipradr.com
   nifi:
     name: nifi-ingress
     tls: false
-    host: nifi1.ipradr.com
+    host: nifi2.ipradr.com
 tolerations: []
