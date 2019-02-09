@@ -15,7 +15,7 @@ apps:
 
 database:
   mongo:
-    storageClassName: standard-1
+    storageClassName: ssd-storage
     storageName: mongo-persistent-storage
     serviceName: mongo
     replicaSet: rs0
