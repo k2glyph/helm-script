@@ -4,7 +4,7 @@ metadata:
   name: mongo
   namespace: {{ .Release.Namespace }}
 spec:
-  serviceName: {{ .Values.database.mongo.serviceName }}
+  serviceName: {{ template "mongo.serviceName" . }}
   replicas: {{ .Values.database.mongo.replicas }}
   template:
     metadata:
@@ -34,9 +34,11 @@ spec:
           image: cvallance/mongo-k8s-sidecar
           env:
             - name: MONGO_SIDECAR_POD_LABELS
-              value: "role=mongo,environment=prod"
+              value: "role=mongo,environment=prod,app={{ template "mongo.serviceName" . }}"
             - name: KUBERNETES_MONGO_SERVICE_NAME
-              value: {{ .Values.database.mongo.serviceName }}
+              value: {{ template "mongo.serviceName" . }}
+            - name: KUBE_NAMESPACE
+              value: {{ .Release.Namespace }}
   volumeClaimTemplates:
   - metadata:
       name: {{ .Values.database.mongo.storageName }}

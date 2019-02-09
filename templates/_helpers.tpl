@@ -38,12 +38,16 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "mongo.serviceName" -}}
+{{- printf "%s-%s" .Values.database.mongo.serviceName .Release.Namespace| replace "+" "_" | trunc 80 | trimSuffix "-" -}}
+{{- end -}}
 {{/* Create mongodb database url for.*/}}
-{{- define "monogo.dburl" -}}
+{{- define "mongo.dburl" -}}
 {{/* sprig needs to conver .Values.database.mongo.replicas to int */}}
 {{- $replicas := (atoi (printf "%d" (int64 .Values.database.mongo.replicas))) -}}
+{{- $mongoSurfix := (printf "mongo-%s.%s.svc.cluster.local" .Release.Namespace .Release.Namespace ) -}}
 {{- range $i, $e := until $replicas -}}
-{{- printf "%s-%s-%d.mongo" .Values.database.mongo.serviceName .Release.Namespace $i -}}
+{{- printf "mongo-%d.%s" $i $mongoSurfix -}}
 {{- if lt (add $i 1) $replicas -}}
 ,
 {{- end -}}

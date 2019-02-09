@@ -41,7 +41,7 @@ spec:
           image: {{ .Values.apps.backendapp.repository }}:{{ .Values.apps.backendapp.tag }}
           env:
           - name: DB_URL
-            value: {{ template "monogo.dburl" . }}
+            value: {{ template "mongo.dburl" . }}
           - name: DB_PORT
             value: !!str {{ .Values.database.mongo.port }}
           - name: DB_NAME

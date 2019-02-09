@@ -18,7 +18,7 @@ database:
     storageName: mongo-persistent-storage
     serviceName: mongo
     replicaSet: rs0
-    replicas: 1
+    replicas: 2
     port: 27017
     storageSize: 10Gi
     accessMode: ReadWriteOnce
