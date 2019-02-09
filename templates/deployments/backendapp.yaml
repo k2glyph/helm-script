@@ -25,7 +25,7 @@ spec:
         app: {{ template "backendapp.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount }}-{{ .Release.Namespace }}
+      serviceAccountName: {{ .Values.serviceAccount }}
       initContainers:
         - name: pod-dependency
           image: ylonkar/pod-dependency-init-container:1.0

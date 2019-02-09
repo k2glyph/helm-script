@@ -12,7 +12,7 @@ spec:
         role: mongo
         environment: prod
     spec:
-      serviceAccountName: {{ .Values.serviceAccount }}-{{ .Release.Namespace }}
+      serviceAccountName: {{ .Values.serviceAccount }}
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
