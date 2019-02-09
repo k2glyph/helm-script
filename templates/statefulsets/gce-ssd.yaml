@@ -7,4 +7,4 @@ metadata:
 provisioner: kubernetes.io/gce-pd
 parameters:
   type: pd-ssd
-reclaimPolicy: Retain
+# reclaimPolicy: Retain
