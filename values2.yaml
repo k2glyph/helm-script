@@ -20,9 +20,9 @@ database:
     replicaSet: rs0
     replicas: 2
     port: 27017
-    storageSize: 10Gi
+    storageSize: 5Gi
     accessMode: ReadWriteOnce
-
+    
 service:
   frontendapp:
     name: frontendapp-service
